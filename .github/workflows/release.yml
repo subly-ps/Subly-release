@@ -1,0 +1,25 @@
+# Tạo bản phát hành bằng tài khoản bot của GitHub Actions (trang release hiện "github-actions[bot]").
+# Chạy tay: Actions → release → Run workflow, nhập tag (vd v0.2.0) và tên. Nội dung lấy từ docs/releases/<tag>.md.
+# File cài đặt tải lên sau bằng API hoặc trên web (người tải lên không hiện công khai).
+name: release
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag, ví dụ v0.2.0"
+        required: true
+      title:
+        description: "Tên bản phát hành"
+        required: true
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: gh release create "$TAG" --title "$TITLE" --notes-file "docs/releases/$TAG.md" --target main
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+          TITLE: ${{ inputs.title }}
